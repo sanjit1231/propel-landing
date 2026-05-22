@@ -671,13 +671,15 @@
     Propel
   </a>
   <ul class="nav-links">
-    <li><a href="#features">Features</a></li>
-    <li><a href="#tools">Tools</a></li>
-    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#calculator">College Calculator</a></li>
+    <li><a href="#exam-prep">Exam Prep</a></li>
+    <li><a href="#study">Study Tool</a></li>
+    <li><a href="#simulator">Physics</a></li>
   </ul>
   <div class="nav-actions">
-    <a href="/login" class="btn-ghost">Login</a>
-    <a href="/signup" class="btn-primary">Sign Up</a>
+    <a href="#home" class="btn-ghost">Login</a>
+    <a href="#home" class="btn-primary">Sign Up</a>
   </div>
 </nav>
 
@@ -982,6 +984,35 @@
   </div>
 </div>
 
+<!-- TOOL SECTIONS -->
+<section id="calculator-section" class="tool-section" style="display:none;">
+  <div style="padding: 40px 5%; max-width: 1200px; margin: 0 auto;">
+    <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 24px;">College Calculator</h1>
+    <div id="calculatorContent">Loading...</div>
+  </div>
+</section>
+
+<section id="exam-prep-section" class="tool-section" style="display:none;">
+  <div style="padding: 40px 5%; max-width: 1200px; margin: 0 auto;">
+    <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 24px;">AP Exam Prep</h1>
+    <div id="examPrepContent">Loading...</div>
+  </div>
+</section>
+
+<section id="study-section" class="tool-section" style="display:none;">
+  <div style="padding: 40px 5%; max-width: 1200px; margin: 0 auto;">
+    <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 24px;">Study Tool</h1>
+    <div id="studyContent">Loading...</div>
+  </div>
+</section>
+
+<section id="simulator-section" class="tool-section" style="display:none;">
+  <div style="padding: 40px 5%; max-width: 1200px; margin: 0 auto;">
+    <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 24px;">Physics Simulator</h1>
+    <div id="simulatorContent">Loading...</div>
+  </div>
+</section>
+
 <!-- CTA SECTION -->
 <section class="cta-section" id="pricing">
   <div class="cta-inner">
@@ -989,8 +1020,8 @@
     <h2>Ready to ace your exams<br />and get into your dream school?</h2>
     <p>Join thousands of students using Propel to master AP exams, plan college applications, and study smarter — starting completely free.</p>
     <div class="cta-buttons">
-      <a href="/signup" class="btn-cta-primary">Start Free Today</a>
-      <a href="/login" class="btn-cta-secondary">Already have an account</a>
+      <a href="#home" class="btn-cta-primary">Start Free Today</a>
+      <a href="#home" class="btn-cta-secondary">Already have an account</a>
     </div>
   </div>
 </section>
@@ -1014,7 +1045,110 @@
 
 </main>
 
+<!-- Three.js for Physics Simulator -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- Tool Scripts -->
+<script src="js/tools/calculator.js"></script>
+<script src="js/tools/exam-prep.js"></script>
+<script src="js/tools/study-tool.js"></script>
+<script src="js/tools/physics-simulator.js"></script>
+<script src="js/utils/sm2.js"></script>
+
 <script>
+  // Router for hash-based navigation
+  class PageRouter {
+    constructor() {
+      this.currentPage = 'home';
+      this.initRouter();
+    }
+
+    initRouter() {
+      window.addEventListener('hashchange', () => this.handleRoute());
+      this.handleRoute();
+    }
+
+    handleRoute() {
+      const hash = window.location.hash.slice(1) || 'home';
+      const page = hash.split('/')[0] || 'home';
+
+      this.navigateToPage(page);
+    }
+
+    navigateToPage(page) {
+      // Hide all tool sections
+      document.querySelectorAll('.tool-section').forEach(s => s.style.display = 'none');
+
+      // Get all home-related elements
+      const homeContent = document.querySelector('.hero');
+      const logoRow = document.querySelector('.logo-row');
+      const dividers = document.querySelectorAll('.section-divider');
+      const featureSections = document.querySelectorAll('.feature-section, .features-grid-section, .cta-section');
+
+      if (page === 'home') {
+        // Show all home content
+        if (homeContent) homeContent.style.display = 'flex';
+        if (logoRow) logoRow.style.display = 'block';
+        dividers.forEach(d => d.style.display = 'block');
+        featureSections.forEach(s => s.style.display = 'block');
+      } else {
+        // Hide home content
+        if (homeContent) homeContent.style.display = 'none';
+        if (logoRow) logoRow.style.display = 'none';
+        dividers.forEach(d => d.style.display = 'none');
+        featureSections.forEach(s => s.style.display = 'none');
+      }
+
+      // Show the selected tool section
+      const sectionMap = {
+        'calculator': 'calculator-section',
+        'exam-prep': 'exam-prep-section',
+        'study': 'study-section',
+        'simulator': 'simulator-section'
+      };
+
+      const sectionId = sectionMap[page];
+      if (sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.style.display = 'block';
+          this.loadPageContent(page);
+        }
+      }
+
+      window.scrollTo(0, 0);
+      this.currentPage = page;
+    }
+
+    loadPageContent(page) {
+      switch(page) {
+        case 'calculator':
+          if (typeof initCalculator === 'function') {
+            initCalculator();
+          }
+          break;
+        case 'exam-prep':
+          if (typeof initExamPrep === 'function') {
+            initExamPrep();
+          }
+          break;
+        case 'study':
+          if (typeof initStudyTool === 'function') {
+            initStudyTool();
+          }
+          break;
+        case 'simulator':
+          if (typeof initSimulator === 'function') {
+            initSimulator();
+          }
+          break;
+      }
+    }
+  }
+
+  // Initialize router when DOM is ready
+  const router = new PageRouter();
+
   // Parallax orbs on mousemove
   const orb1 = document.querySelector('.orb-1');
   const orb2 = document.querySelector('.orb-2');
