@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Propel — Master Your Academic Goals</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/app.css" />
+  <style>
+    /* App-specific base styles */
+    body.app-mode {
+      padding-top: 64px;
+    }
+
+    .app-container {
+      min-height: calc(100vh - 64px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .app-page {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .app-page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Auth Modal Styles */
+    .auth-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 3, 18, 0.8);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .auth-modal.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .auth-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 48px;
+      max-width: 400px;
+      width: 90%;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .auth-card h2 {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .auth-card p {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .auth-form input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .auth-form input:focus {
+      outline: none;
+      border-color: var(--violet);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .auth-form input::placeholder {
+      color: var(--text-subtle);
+    }
+
+    .auth-form button {
+      background: linear-gradient(135deg, var(--violet), var(--indigo));
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .auth-form button:hover {
+      opacity: 0.9;
+    }
+
+    .auth-form button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .auth-toggle {
+      text-align: center;
+      margin-top: 16px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .auth-toggle button {
+      background: none;
+      border: none;
+      color: var(--violet-light);
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .auth-error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .auth-success {
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: #34d399;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    /* Loading state */
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="app-mode">
+
+<!-- Background effects -->
+<div class="bg-layer">
+  <div class="orb-1"></div>
+  <div class="orb-2"></div>
+  <div class="orb-3"></div>
+  <div class="grid-overlay"></div>
+</div>
+
+<!-- Navigation Bar -->
+<nav>
+  <a href="/" class="nav-logo">
+    <div class="logo-icon">P</div>
+    Propel
+  </a>
+  <ul class="nav-links" id="navLinks" style="display: none;">
+    <li><a href="#/home">Home</a></li>
+    <li><a href="#/calculator">College Calculator</a></li>
+    <li><a href="#/exam-prep">Exam Prep</a></li>
+    <li><a href="#/study">Study Tool</a></li>
+    <li><a href="#/simulator">Physics</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button id="profileBtn" class="btn-ghost" style="display: none;">
+      <span id="userDisplayName"></span>
+    </button>
+    <button id="logoutBtn" class="btn-ghost" style="display: none;" onclick="authManager.logout()">Logout</button>
+    <button id="loginBtn" class="btn-primary" style="display: none;" onclick="showAuthModal('login')">Sign In</button>
+    <button id="signupBtn" class="btn-primary" style="display: none;" onclick="showAuthModal('signup')">Sign Up</button>
+  </div>
+</nav>
+
+<!-- Main App Container -->
+<main class="app-container">
+  <!-- Auth Modal -->
+  <div id="authModal" class="auth-modal">
+    <div class="auth-card">
+      <div id="authMessage"></div>
+      <form id="authForm" class="auth-form" onsubmit="handleAuthSubmit(event)">
+        <input type="email" id="authEmail" placeholder="Email" required />
+        <input type="password" id="authPassword" placeholder="Password" minlength="6" required />
+        <input type="text" id="authName" placeholder="Full Name" style="display: none;" />
+        <button type="submit" id="authSubmitBtn">Sign In</button>
+      </form>
+      <div class="auth-toggle">
+        <span id="authToggleText">Don't have an account?</span>
+        <button onclick="toggleAuthMode()">Sign up</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Home/Dashboard Page -->
+  <section id="homePage" class="app-page active">
+    <div style="padding: 60px 5%; max-width: 1200px; margin: 0 auto;">
+      <h1 style="font-size: 48px; font-weight: 800; margin-bottom: 16px;">Welcome to Propel</h1>
+      <p style="font-size: 18px; color: var(--text-muted); margin-bottom: 48px;">Master your academic goals with our AI-powered tools</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px;">
+        <!-- College Calculator Card -->
+        <a href="#/calculator" style="text-decoration: none;">
+          <div style="background: linear-gradient(145deg, rgba(124,58,237,0.1), rgba(79,70,229,0.05)); border: 1px solid rgba(124,58,237,0.2); border-radius: 20px; padding: 32px; cursor: pointer; transition: all 0.3s; text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 16px;">🎓</div>
+            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">College Calculator</h3>
+            <p style="color: var(--text-muted); font-size: 13px;">Know your odds at every school</p>
+          </div>
+        </a>
+
+        <!-- Exam Prep Card -->
+        <a href="#/exam-prep" style="text-decoration: none;">
+          <div style="background: linear-gradient(145deg, rgba(124,58,237,0.1), rgba(79,70,229,0.05)); border: 1px solid rgba(124,58,237,0.2); border-radius: 20px; padding: 32px; cursor: pointer; transition: all 0.3s; text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 16px;">📚</div>
+            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">AP Exam Prep</h3>
+            <p style="color: var(--text-muted); font-size: 13px;">50+ real FRQs with solutions</p>
+          </div>
+        </a>
+
+        <!-- Study Tool Card -->
+        <a href="#/study" style="text-decoration: none;">
+          <div style="background: linear-gradient(145deg, rgba(124,58,237,0.1), rgba(79,70,229,0.05)); border: 1px solid rgba(124,58,237,0.2); border-radius: 20px; padding: 32px; cursor: pointer; transition: all 0.3s; text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 16px;">✨</div>
+            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Study Tool</h3>
+            <p style="color: var(--text-muted); font-size: 13px;">Spaced repetition that works</p>
+          </div>
+        </a>
+
+        <!-- Physics Simulator Card -->
+        <a href="#/simulator" style="text-decoration: none;">
+          <div style="background: linear-gradient(145deg, rgba(124,58,237,0.1), rgba(79,70,229,0.05)); border: 1px solid rgba(124,58,237,0.2); border-radius: 20px; padding: 32px; cursor: pointer; transition: all 0.3s; text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 16px;">🔬</div>
+            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Physics Simulator</h3>
+            <p style="color: var(--text-muted); font-size: 13px;">See physics come alive</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- College Calculator Page -->
+  <section id="calculatorPage" class="app-page">
+    <div style="padding: 40px 5%; max-width: 1200px; margin: 0 auto;">
+      <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 24px;">College Calculator</h1>
+      <div id="calculatorContent">Loading...</div>
+    </div>
+  </section>
+
+  <!-- Exam Prep Page -->
+  <section id="examPrepPage" class="app-page">
+    <div style="padding: 40px 5%; max-width: 1200px; margin: 0 auto;">
+      <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 24px;">AP Exam Prep</h1>
+      <div id="examPrepContent">Loading...</div>
+    </div>
+  </section>
+
+  <!-- Study Tool Page -->
+  <section id="studyPage" class="app-page">
+    <div style="padding: 40px 5%; max-width: 1200px; margin: 0 auto;">
+      <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 24px;">Study Tool</h1>
+      <div id="studyContent">Loading...</div>
+    </div>
+  </section>
+
+  <!-- Physics Simulator Page -->
+  <section id="simulatorPage" class="app-page">
+    <div style="padding: 40px 5%; max-width: 1200px; margin: 0 auto;">
+      <h1 style="font-size: 32px; font-weight: 800; margin-bottom: 24px;">Physics Simulator</h1>
+      <div id="simulatorContent">Loading...</div>
+    </div>
+  </section>
+</main>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+
+<!-- App Scripts -->
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+
+<!-- Parallax script from landing page -->
+<script>
+  const orb1 = document.querySelector('.orb-1');
+  const orb2 = document.querySelector('.orb-2');
+  document.addEventListener('mousemove', e => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 20;
+    const y = (e.clientY / window.innerHeight - 0.5) * 10;
+    orb1.style.transform = `translateX(calc(-50% + ${x}px)) translateY(${y}px)`;
+    orb2.style.transform = `translate(${-x * 0.5}px, ${-y * 0.5}px)`;
+  });
+</script>
+
+</body>
+</html>
