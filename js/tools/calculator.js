@@ -1,21 +1,43 @@
 // College Calculator Tool
 // Matches student stats against colleges and categorizes as Reach/Target/Safety
 
-let collegesData = [];
+let collegesData = [
+  {"id": 1, "name": "MIT", "location": "Cambridge, MA", "acceptanceRate": 3.2, "avgGPA": 3.98, "avgSAT": 1545},
+  {"id": 2, "name": "Stanford University", "location": "Palo Alto, CA", "acceptanceRate": 3.7, "avgGPA": 3.96, "avgSAT": 1540},
+  {"id": 3, "name": "Harvard University", "location": "Cambridge, MA", "acceptanceRate": 3.2, "avgGPA": 3.99, "avgSAT": 1550},
+  {"id": 4, "name": "Yale University", "location": "New Haven, CT", "acceptanceRate": 4.0, "avgGPA": 3.97, "avgSAT": 1540},
+  {"id": 5, "name": "Princeton University", "location": "Princeton, NJ", "acceptanceRate": 2.7, "avgGPA": 3.98, "avgSAT": 1550},
+  {"id": 6, "name": "UChicago", "location": "Chicago, IL", "acceptanceRate": 5.3, "avgGPA": 3.96, "avgSAT": 1530},
+  {"id": 7, "name": "Columbia University", "location": "New York, NY", "acceptanceRate": 3.6, "avgGPA": 3.97, "avgSAT": 1545},
+  {"id": 8, "name": "University of Pennsylvania", "location": "Philadelphia, PA", "acceptanceRate": 3.9, "avgGPA": 3.97, "avgSAT": 1540},
+  {"id": 9, "name": "Northwestern University", "location": "Evanston, IL", "acceptanceRate": 7.7, "avgGPA": 3.93, "avgSAT": 1520},
+  {"id": 10, "name": "Duke University", "location": "Durham, NC", "acceptanceRate": 5.8, "avgGPA": 3.95, "avgSAT": 1530},
+  {"id": 11, "name": "Caltech", "location": "Pasadena, CA", "acceptanceRate": 2.7, "avgGPA": 3.98, "avgSAT": 1560},
+  {"id": 12, "name": "Johns Hopkins University", "location": "Baltimore, MD", "acceptanceRate": 7.3, "avgGPA": 3.93, "avgSAT": 1530},
+  {"id": 13, "name": "UC San Diego", "location": "La Jolla, CA", "acceptanceRate": 21.9, "avgGPA": 3.84, "avgSAT": 1330},
+  {"id": 14, "name": "Georgia Tech", "location": "Atlanta, GA", "acceptanceRate": 17.0, "avgGPA": 3.87, "avgSAT": 1490},
+  {"id": 15, "name": "University of Michigan", "location": "Ann Arbor, MI", "acceptanceRate": 18.3, "avgGPA": 3.86, "avgSAT": 1480},
+  {"id": 16, "name": "USC", "location": "Los Angeles, CA", "acceptanceRate": 10.9, "avgGPA": 3.91, "avgSAT": 1510},
+  {"id": 17, "name": "Carnegie Mellon University", "location": "Pittsburgh, PA", "acceptanceRate": 9.6, "avgGPA": 3.92, "avgSAT": 1530},
+  {"id": 18, "name": "University of Texas at Austin", "location": "Austin, TX", "acceptanceRate": 18.9, "avgGPA": 3.82, "avgSAT": 1430},
+  {"id": 19, "name": "UCLA", "location": "Los Angeles, CA", "acceptanceRate": 8.6, "avgGPA": 3.88, "avgSAT": 1480},
+  {"id": 20, "name": "UC Berkeley", "location": "Berkeley, CA", "acceptanceRate": 9.3, "avgGPA": 3.89, "avgSAT": 1500},
+  {"id": 21, "name": "Boston College", "location": "Boston, MA", "acceptanceRate": 21.2, "avgGPA": 3.84, "avgSAT": 1440},
+  {"id": 22, "name": "Washington University in St. Louis", "location": "St. Louis, MO", "acceptanceRate": 13.4, "avgGPA": 3.90, "avgSAT": 1500},
+  {"id": 23, "name": "University of Virginia", "location": "Charlottesville, VA", "acceptanceRate": 15.3, "avgGPA": 3.87, "avgSAT": 1480},
+  {"id": 24, "name": "Emory University", "location": "Atlanta, GA", "acceptanceRate": 9.1, "avgGPA": 3.89, "avgSAT": 1490},
+  {"id": 25, "name": "Rice University", "location": "Houston, TX", "acceptanceRate": 8.7, "avgGPA": 3.90, "avgSAT": 1500},
+  {"id": 26, "name": "Arizona State University", "location": "Tempe, AZ", "acceptanceRate": 88.0, "avgGPA": 3.48, "avgSAT": 1170},
+  {"id": 27, "name": "University of Colorado Boulder", "location": "Boulder, CO", "acceptanceRate": 80.0, "avgGPA": 3.60, "avgSAT": 1230},
+  {"id": 28, "name": "University of Florida", "location": "Gainesville, FL", "acceptanceRate": 28.2, "avgGPA": 3.80, "avgSAT": 1380},
+  {"id": 29, "name": "Indiana University", "location": "Bloomington, IN", "acceptanceRate": 61.3, "avgGPA": 3.70, "avgSAT": 1270},
+  {"id": 30, "name": "University of Wisconsin-Madison", "location": "Madison, WI", "acceptanceRate": 50.0, "avgGPA": 3.75, "avgSAT": 1350}
+];
+
 let userStats = {};
 let selectedColleges = [];
 
-async function initCalculator() {
-  // Load college data
-  try {
-    const response = await fetch('js/data/colleges.json');
-    collegesData = await response.json();
-  } catch (error) {
-    console.error('Error loading colleges:', error);
-    document.getElementById('calculatorContent').innerHTML = '<p>Error loading data</p>';
-    return;
-  }
-
+function initCalculator() {
   // Load user's saved selections from localStorage
   const saved = localStorage.getItem('selectedColleges');
   if (saved) {
