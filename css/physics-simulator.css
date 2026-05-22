@@ -1,0 +1,71 @@
+/* Physics Simulator Styles */
+
+#simulatorContent {
+  width: 100%;
+}
+
+#simulationCanvas {
+  width: 100%;
+  height: 100%;
+}
+
+#controlsPanel {
+  margin-bottom: 16px;
+}
+
+#controlsPanel input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: rgba(124, 58, 237, 0.2);
+  border-radius: 2px;
+  outline: none;
+}
+
+#controlsPanel input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: var(--violet);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.5);
+}
+
+#controlsPanel input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: var(--violet);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.5);
+}
+
+#infoPanel {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+#statsPanel > div {
+  padding: 12px;
+  background: rgba(124, 58, 237, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(124, 58, 237, 0.2);
+  text-align: center;
+}
+
+#statsPanel .stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--violet-light);
+  margin-top: 4px;
+}
+
+#statsPanel .stat-label {
+  color: var(--text-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
