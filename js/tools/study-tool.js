@@ -1,24 +1,26 @@
 // Study Tool with SM-2 Spaced Repetition
-// Learn 250+ cards with optimized spacing algorithm
+// Learn cards with optimized spacing algorithm
 
-let studyCards = [];
+let studyCards = [
+  {"id": 1, "subject": "Physics", "question": "Define velocity", "answer": "The rate of change of displacement with respect to time. It is a vector quantity (has direction). v = Δx/Δt", "difficulty": "easy"},
+  {"id": 2, "subject": "Physics", "question": "What is acceleration?", "answer": "The rate of change of velocity with respect to time. a = Δv/Δt. Units: m/s²", "difficulty": "easy"},
+  {"id": 3, "subject": "Physics", "question": "State Newton's First Law", "answer": "An object at rest stays at rest, and an object in motion stays in motion unless acted upon by an external force. (Objects have inertia)", "difficulty": "easy"},
+  {"id": 4, "subject": "Physics", "question": "State Newton's Second Law", "answer": "The net force on an object equals its mass times acceleration: F_net = ma", "difficulty": "easy"},
+  {"id": 5, "subject": "Physics", "question": "State Newton's Third Law", "answer": "For every action, there is an equal and opposite reaction. Forces always occur in pairs.", "difficulty": "easy"},
+  {"id": 6, "subject": "Physics", "question": "What is the formula for kinetic energy?", "answer": "KE = ½mv², where m is mass and v is velocity. Units: Joules (J)", "difficulty": "medium"},
+  {"id": 7, "subject": "Calculus", "question": "What is the derivative?", "answer": "The instantaneous rate of change of a function. It measures how fast the function is changing at a point. f'(x) = lim(h→0) [f(x+h) - f(x)]/h", "difficulty": "medium"},
+  {"id": 8, "subject": "Calculus", "question": "What is the power rule?", "answer": "d/dx(x^n) = n·x^(n-1). Example: d/dx(x³) = 3x²", "difficulty": "easy"},
+  {"id": 9, "subject": "Chemistry", "question": "Define an atom", "answer": "The smallest unit of matter that retains the properties of an element. Made of protons, neutrons, and electrons.", "difficulty": "easy"},
+  {"id": 10, "subject": "Chemistry", "question": "What is atomic number?", "answer": "The number of protons in an atom. It defines the element. Example: Carbon has atomic number 6 (6 protons)", "difficulty": "easy"}
+];
+
 let cardStates = {};
 let selectedDeck = 'All';
 let currentCardIndex = 0;
 let studySession = [];
 let sessionStats = { studied: 0, easy: 0, good: 0, hard: 0, forgot: 0 };
 
-async function initStudyTool() {
-  // Load study cards
-  try {
-    const response = await fetch('js/data/study-cards.json');
-    studyCards = await response.json();
-  } catch (error) {
-    console.error('Error loading cards:', error);
-    document.getElementById('studyContent').innerHTML = '<p>Error loading data</p>';
-    return;
-  }
-
+function initStudyTool() {
   // Load card states from localStorage
   const saved = localStorage.getItem('cardStates');
   if (saved) {
